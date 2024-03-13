@@ -16,6 +16,7 @@ const (
 
 type Node interface {
 	NodeType() NodeType
+	Generic() GenericNode
 }
 
 type Nodes []Node
@@ -86,6 +87,10 @@ type GenericNode struct {
 
 func (gn GenericNode) NodeType() NodeType {
 	return NodeType(gn.Type)
+}
+
+func (gn GenericNode) Generic() GenericNode {
+	return gn
 }
 
 // TextNode stores text.

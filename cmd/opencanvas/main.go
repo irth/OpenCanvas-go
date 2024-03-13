@@ -39,6 +39,8 @@ func main() {
 		os.Exit(1)
 	}
 
+	fmt.Printf("%+v\n", canvas.BoundingBox())
+
 	err = opencanvasRender.Render(outFile, &canvas)
 	if err != nil {
 		fmt.Println(err)
