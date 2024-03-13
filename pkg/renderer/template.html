@@ -82,10 +82,62 @@ body {
 
 </style>
 
-<div id="canvas">
-{{ range .Nodes }}
-<div id="node-{{ .ID }}" class="node node-{{ .NodeType }}">
-    {{ . }}
-</div>
-{{ end }}
-</div>
+<body draggable="true">
+    <div id="canvas">
+    {{ range .Nodes }}
+    <div id="node-{{ .ID }}" class="node node-{{ .NodeType }}">
+        {{ . }}
+    </div>
+    {{ end }}
+    </div>
+
+
+    <script>
+        const canvas = document.getElementById("canvas");
+        const body = document.body;
+
+        let mousedown = false;
+        let start = null;
+        let transform = [0, 0];
+
+        body.addEventListener("mousedown", (e) => {
+            const activatePan = e.metaKey || e.shiftKey;
+
+            if (activatePan) {
+                e.preventDefault();
+                mousedown = true;
+                start = [e.clientX, e.clientY];
+                console.log("starting pan");
+            }
+        });
+
+        body.addEventListener("mousemove", (e) => {
+            if(!mousedown) {
+                return;
+            }
+
+            e.preventDefault();
+            const [startX, startY] = start;
+            const [deltaX, deltaY] = [e.clientX - startX, e.clientY - startY];
+            const [transformX, transformY] = transform;
+            console.log("panning", deltaX, deltaY);
+
+            canvas.style.transform = `translate(${transformX + deltaX}px, ${transformY + deltaY}px)`;
+        });
+
+        body.addEventListener("mouseup", (e) => {
+            if(!mousedown) {
+                return;
+            }
+
+            e.preventDefault();
+            mousedown = false;
+            const [startX, startY] = start;
+            const [deltaX, deltaY] = [e.clientX - startX, e.clientY - startY];
+            const [transformX, transformY] = transform;
+            transform = [transformX + deltaX, transformY + deltaY];
+
+            console.log("stopping pan");
+        });
+    </script>
+</body>
