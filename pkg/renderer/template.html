@@ -47,8 +47,6 @@ body {
 
     background: red;
 
-    // 16px, scaled accordingly
-    font-size: calc(var(--px) * 16);
 
     // center #canvas both vertically and horizontally using flexbox
     display: flex;
@@ -64,6 +62,9 @@ body {
     background-color: #eee;
     width: var(--scaled-canvas-width);
     height: var(--scaled-canvas-height);
+
+    // 16px, scaled accordingly
+    font-size: calc(var(--px) * 16);
 }
 
 {{ range .Nodes }}
@@ -77,12 +78,25 @@ body {
     box-sizing: border-box;
     background-color: #ccc;
 }
-
 {{ end }}
 
+body.no-js #controls {
+    display: none;
+}
+
+body.js {
+    overflow: hidden;
+}
+
+#controls {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    padding: 1rem;
+}
 </style>
 
-<body>
+<body class="no-js">
     <div id="canvas">
     {{ range .Nodes }}
     <div id="node-{{ .ID }}" class="node node-{{ .NodeType }}">
@@ -91,32 +105,89 @@ body {
     {{ end }}
     </div>
 
+    <div id="controls" class="controls">
+        <button id="zoom-in">+</button>
+        <button id="zoom-out">-</button>
+        <button id="reset-zoom">reset</button>
+    </div>
+
 
     <script>
         const canvas = document.getElementById("canvas");
         const body = document.body;
+        body.classList.remove("no-js");
+        body.classList.add("js");
 
+        let zoomTransform = "";
+        let panTransform = "";
+
+        const setZoomTransform = (newTransform) => {
+            zoomTransform = newTransform;
+            canvas.style.transform = `${zoomTransform} ${panTransform}`;
+        };
+
+        const setPanTransform = (newTransform) => {
+            panTransform = newTransform;
+            canvas.style.transform = `${zoomTransform} ${panTransform}`;
+        };
+
+        const resetTransforms = () => {
+            zoom = 1;
+            zoomTransform = "";
+            panTransform = "";
+            canvas.style.transform = "";
+        };
+
+        // zooming
+        let zoom = 1;
+        const zoomStep = 0.2;
+        const setZoom = (newZoom) => {
+            zoom = Math.max(1, newZoom);
+            setZoomTransform(`scale(${zoom})`);
+        };
+
+        const zoomIn = () => {
+            setZoom(zoom + zoomStep);
+        };
+
+        const zoomOut = () => {
+            setZoom(zoom - zoomStep);
+        };
+
+
+        const zoomInButton = document.getElementById("zoom-in");
+        zoomInButton.addEventListener("click", zoomIn);
+
+        const zoomOutButton = document.getElementById("zoom-out");
+        zoomOutButton.addEventListener("click", zoomOut);
+
+        const resetButton = document.getElementById("reset-zoom");
+        resetButton.addEventListener("click", resetTransforms);
+
+        // panning
         let mousedown = false;
         let start = null;
         let transform = [0, 0];
 
-        const isNodeOrChild = (el) => {
+        const isElementOrChildOfClass = (el, className) => {
             // stop condition when body
             if (el === body) {
                 return false;
             }
 
-            // stop condition when node
-            if (el.classList.contains("node")) {
+            // stop condition when class
+            if (el.classList.contains(className)) {
                 return true;
             }
 
             // continue condition when child
-            return isNodeOrChild(el.parentElement);
+            return isElementOrChildOfClass(el.parentElement, className);
         }
 
+        const isDraggable = (el) => !isElementOrChildOfClass(el, "node") && !isElementOrChildOfClass(el, "controls");
+
         body.addEventListener("mousedown", (e) => {
-            const activatePan = e.metaKey || e.shiftKey || !isNodeOrChild(e.target);
+            const activatePan = e.metaKey || e.shiftKey || isDraggable(e.target);
 
             if (activatePan) {
                 e.preventDefault();
@@ -135,9 +206,8 @@ body {
             const [startX, startY] = start;
             const [deltaX, deltaY] = [e.clientX - startX, e.clientY - startY];
             const [transformX, transformY] = transform;
-            console.log("panning", deltaX, deltaY);
 
-            canvas.style.transform = `translate(${transformX + deltaX}px, ${transformY + deltaY}px)`;
+            setPanTransform(`translate(${transformX + deltaX}px, ${transformY + deltaY}px)`);
         });
 
         body.addEventListener("mouseup", (e) => {
@@ -152,6 +222,7 @@ body {
             const [transformX, transformY] = transform;
             transform = [transformX + deltaX, transformY + deltaY];
 
+            setPanTransform(`translate(${transformX + deltaX}px, ${transformY + deltaY}px)`);
             console.log("stopping pan");
         });
     </script>
