@@ -10,7 +10,18 @@ import (
 
 //go:embed template.html
 var templateString string
-var tmpl *template.Template = template.Must(template.New("").Parse(templateString))
+
+//go:embed normalize.css
+var normalizeCSS string
+
+func Normalize() template.CSS {
+	return template.CSS(normalizeCSS)
+}
+
+var funcMap template.FuncMap = template.FuncMap{
+	"normalize": Normalize,
+}
+var tmpl *template.Template = template.Must(template.New("").Funcs(funcMap).Parse(templateString))
 
 func Render(w io.Writer, canvas *opencanvas.Canvas) error {
 	return tmpl.Execute(w, canvas)

@@ -1,1 +1,91 @@
-meow
+<!DOCTYPE html>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+<!-- TODO: use canvas title, perhaps from the original filename? -->
+<title>OpenCanvas</title>
+
+
+<style>
+{{ normalize }}
+
+:root {
+    /* zoom (to be set from JS) */
+    --zoom: 1;
+
+    /* original canvas size, as in the canvas file */
+    --canvas-width: {{ .BoundingBox.W }}px;
+    --canvas-height: {{ .BoundingBox.H }}px;
+
+    /* scaled to viewport, ensuring aspect ratio, with fallback from dvh/dvw to vh/vw */
+    --scaled-canvas-width-unbound: min(100vw, 100vh * {{ .BoundingBox.W }} / {{ .BoundingBox.H }});
+    --scaled-canvas-height-unbound: min(100vh, 100vw * {{ .BoundingBox.H }} / {{ .BoundingBox.W }});
+    --scaled-canvas-width-unbound: min(100dvw, 100dvh * {{ .BoundingBox.W }} / {{ .BoundingBox.H }});
+    --scaled-canvas-height-unbound: min(100dvh, 100dvw * {{ .BoundingBox.H }} / {{ .BoundingBox.W }});
+
+    /* scaled, but limited to the original size (it can shrink but not grow) */
+    --scaled-canvas-width: min(var(--canvas-width), var(--scaled-canvas-width-unbound));
+    --scaled-canvas-height: min(var(--canvas-height), var(--scaled-canvas-height-unbound));
+
+    /* pixel scale */
+    --px: calc( var(--scaled-canvas-width) / {{ .BoundingBox.W }} );
+}
+
+body {
+    transform: scale(var(--zoom));
+
+    padding: 0;
+    margin: 0;
+
+    height: 100vh;
+    height: 100dvh;
+
+    width: 100vw;
+    width: 100dvw;
+
+    background: red;
+
+    // 16px, scaled accordingly
+    font-size: calc(var(--px) * 16);
+
+    // center #canvas both vertically and horizontally using flexbox
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+#canvas {
+    position: relative;
+    padding: 0;
+    margin: 0;
+    background-color: #eee;
+    width: var(--scaled-canvas-width);
+    height: var(--scaled-canvas-height);
+}
+
+{{ range .Nodes }}
+#node-{{ .ID }} {
+    position: absolute;
+    top: {{ ( .AsPercentOf $ ).Y }}%;
+    left: {{ ( .AsPercentOf $ ).X }}%;
+    width: {{ ( .AsPercentOf $).W }}%;
+    height: {{ ( .AsPercentOf $).H }}%;
+    border: solid 1px red;
+    box-sizing: border-box;
+    background-color: #ccc;
+}
+
+{{ end }}
+
+</style>
+
+<div id="canvas">
+{{ range .Nodes }}
+<div id="node-{{ .ID }}" class="node node-{{ .NodeType }}">
+    {{ . }}
+</div>
+{{ end }}
+</div>

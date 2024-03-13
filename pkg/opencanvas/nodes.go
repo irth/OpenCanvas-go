@@ -70,15 +70,7 @@ type GenericNode struct {
 	// Type is the type of the node.
 	Type string `json:"type"`
 
-	// X is the `x` position of the node in pixels.
-	X int `json:"x"`
-	// Y is the `y` position of the node in pixels.
-	Y int `json:"y"`
-
-	// Width is the width of the node in pixels.
-	Width int `json:"width"`
-	// Height is the height of the node in pixels.
-	Height int `json:"height"`
+	Rectangle `json:",inline"`
 
 	// Color is the color of the node, either in hex or a number from 1 to 6
 	// representing a predefined color.
