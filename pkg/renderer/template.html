@@ -82,7 +82,7 @@ body {
 
 </style>
 
-<body draggable="true">
+<body>
     <div id="canvas">
     {{ range .Nodes }}
     <div id="node-{{ .ID }}" class="node node-{{ .NodeType }}">
@@ -100,8 +100,23 @@ body {
         let start = null;
         let transform = [0, 0];
 
+        const isNodeOrChild = (el) => {
+            // stop condition when body
+            if (el === body) {
+                return false;
+            }
+
+            // stop condition when node
+            if (el.classList.contains("node")) {
+                return true;
+            }
+
+            // continue condition when child
+            return isNodeOrChild(el.parentElement);
+        }
+
         body.addEventListener("mousedown", (e) => {
-            const activatePan = e.metaKey || e.shiftKey;
+            const activatePan = e.metaKey || e.shiftKey || !isNodeOrChild(e.target);
 
             if (activatePan) {
                 e.preventDefault();
