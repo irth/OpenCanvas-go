@@ -1,0 +1,3 @@
+[submodule "sample-data/jsoncanvas"]
+	path = sample-data/jsoncanvas
+	url = https://github.com/obsidianmd/jsoncanvas
