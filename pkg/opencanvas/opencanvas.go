@@ -1,5 +1,5 @@
 // Package opencanvas handles parsing the JSON Canvas 1.0 file format.
-// See https://jsoncanvas.com for more information.
+// See https://jsoncanvas.org for more information.
 package opencanvas
 
 import "math"
