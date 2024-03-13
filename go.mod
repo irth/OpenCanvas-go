@@ -1,4 +1,4 @@
-module github.com/irth/opencanvas
+module github.com/irth/opencanvas-go
 
 go 1.22.1
 

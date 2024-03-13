@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/irth/opencanvas/pkg/opencanvas"
-	opencanvasRender "github.com/irth/opencanvas/pkg/renderer"
+	"github.com/irth/opencanvas-go/pkg/opencanvas"
+	opencanvasRender "github.com/irth/opencanvas-go/pkg/renderer"
 )
 
 func main() {

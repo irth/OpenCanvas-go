@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/irth/opencanvas/pkg/opencanvas"
+	"github.com/irth/opencanvas-go/pkg/opencanvas"
 	"github.com/stretchr/testify/assert"
 )
 

@@ -5,7 +5,7 @@ import (
 	"html/template"
 	"io"
 
-	"github.com/irth/opencanvas/pkg/opencanvas"
+	"github.com/irth/opencanvas-go/pkg/opencanvas"
 )
 
 //go:embed template.html
